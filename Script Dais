@@ -87,18 +87,39 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
     bb:ClickButton2(Vector2.new())
 end)
 
-local rebStatsActive = true
+local rebStatsActive = false
 local events = game:GetService("ReplicatedStorage").Package.Events
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 200, 0, 50)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "Activar"
+toggleButton.Parent = screenGui
+
+local function toggleRebStats()
+    rebStatsActive = not rebStatsActive
+    if rebStatsActive then
+        toggleButton.Text = "Desactivar"
+    else
+        toggleButton.Text = "Activar"
+    end
+end
+
+toggleButton.MouseButton1Click:Connect(toggleRebStats)
 
 task.spawn(function()
-    while rebStatsActive do
+    while true do
         pcall(function()
-            events.reb:InvokeServer()
+            if rebStatsActive then
+                events.reb:InvokeServer()
+            end
         end)
         task.wait(1)
     end
 end)
-
 
 
 
@@ -369,7 +390,7 @@ pcall(function()
                 player.Character.HumanoidRootPart.CFrame = npc.HumanoidRootPart.CFrame
                 events.Qaction:InvokeServer(npc)
                 -- Poner la misión en cooldown de 6 segundos
-                missionCooldowns[SelectedQuest] = os.time() + 1
+                missionCooldowns[SelectedQuest] = os.time() + 8
             end
         end
     end
